@@ -21,9 +21,26 @@ O server grava o histórico no ClickHouse com `ZBX_HISTORYPROVIDER_0`, na sintax
 - Linux com Docker Engine e o plugin Compose (`docker compose`)
 - `git` e `curl`
 
-## Instalação
+## Baixar os arquivos
 
-Edite o `.env` e troque as senhas antes de começar. Os comandos abaixo leem as senhas desse arquivo.
+Clone este repositório e entre na pasta. Todos os comandos seguintes rodam de dentro dela.
+
+```bash
+git clone https://github.com/lucasmokan/zabbix8-clickhouse-docker.git
+cd zabbix8-clickhouse-docker
+```
+
+Se preferir não usar o `git`, baixe só os dois arquivos necessários, em uma pasta vazia:
+
+```bash
+mkdir zabbix8-clickhouse-docker && cd zabbix8-clickhouse-docker
+curl -O https://raw.githubusercontent.com/lucasmokan/zabbix8-clickhouse-docker/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/lucasmokan/zabbix8-clickhouse-docker/main/.env
+```
+
+Troque as senhas no `.env` antes de continuar (`nano .env`). Os comandos abaixo leem as senhas desse arquivo.
+
+## Instalação
 
 **1. Suba só os bancos:**
 
