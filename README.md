@@ -1,6 +1,6 @@
-# Zabbix 8.0 em Docker com ClickHouse (laboratório)
+# Zabbix 8.0.0rc1 em Docker com ClickHouse (laboratório)
 
-Laboratório Zabbix 8.0 100% em Docker: o histórico dos itens vai para o ClickHouse e o restante (configuração, eventos e trends) fica no PostgreSQL.
+Laboratório Zabbix 8.0.0rc1 100% em Docker: o histórico dos itens vai para o ClickHouse e o restante (configuração, eventos e trends) fica no PostgreSQL.
 
 > Laboratório de testes: senhas simples, portas do ClickHouse abertas e sem TLS. Não use assim em produção.
 
