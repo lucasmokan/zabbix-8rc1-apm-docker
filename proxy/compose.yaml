@@ -1,0 +1,32 @@
+services:
+  zabbix-proxy:
+    build:
+      context: .
+      args:
+        ZBX_REF: ${ZBX_REF:-master}
+    image: zabbix-proxy-apm:8.0
+    restart: unless-stopped
+    environment:
+      ZBX_PROXYMODE: "0"
+      ZBX_SERVER_HOST: zabbix-server
+      ZBX_HOSTNAME: proxy-apm-01
+      ZBX_STARTAPMCOLLECTORS: "1"
+      ZBX_APMLISTENIP: 0.0.0.0
+      ZBX_APMLISTENPORT: "4317"
+      ZBX_TELEMETRYPROVIDER_0: '{"provider":"clickhouse","url":"http://clickhouse:8123","db":"zabbix"}'
+      ZBX_TELEMETRYPROVIDER_0_USERNAME: zabbix
+      ZBX_TELEMETRYPROVIDER_0_PASSWORD: ${CLICKHOUSE_PASSWORD:?defina CLICKHOUSE_PASSWORD no .env}
+    ports:
+      - "4317:4317"
+    networks:
+      - zbx
+    volumes:
+      - proxy_db:/var/lib/zabbix/db_data
+
+networks:
+  zbx:
+    external: true
+    name: zabbix8_zbx
+
+volumes:
+  proxy_db:
