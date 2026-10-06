@@ -1,7 +1,7 @@
 # Zabbix 8.0 RC1 com APM em Docker
 
 **Laboratório completo com Zabbix server, frontend, agente e proxy compilado com APM.**
-**PostgreSQL 18 + TimescaleDB para a infraestrutura e ClickHouse para o APM (OpenTelemetry).**
+**PostgreSQL 18 + TimescaleDB para a infraestrutura e ClickHouse para o APM (OpenTelemetry).** 
 
 Dois bancos, cada um com seu papel:
 
@@ -99,6 +99,12 @@ docker compose up -d --build
 ```bash
 cd ..
 docker compose exec postgres psql -U zabbix -d zabbix -c "SELECT i.key_, h.value, to_timestamp(h.clock) FROM history_uint h JOIN items i USING(itemid) WHERE i.key_ LIKE 'otlp.span%' ORDER BY h.clock DESC LIMIT 5"
+```
+
+5. O `lab-app` envia dados sem parar e enche o ClickHouse. Quando terminar o teste, pare:
+
+```bash
+docker compose -f lab-app/compose.yaml down
 ```
 
 ## Observações
