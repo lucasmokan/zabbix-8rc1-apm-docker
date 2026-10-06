@@ -1,6 +1,7 @@
 # Zabbix 8.0 RC1 com APM em Docker
 
-**PostgreSQL 18 + TimescaleDB para a infraestrutura e ClickHouse para o APM (OpenTelemetry).** Laboratório completo com Zabbix server, frontend, agente e proxy compilado com APM.
+**Laboratório completo com Zabbix server, frontend, agente e proxy compilado com APM.**
+**PostgreSQL 18 + TimescaleDB para a infraestrutura e ClickHouse para o APM (OpenTelemetry).**
 
 Dois bancos, cada um com seu papel:
 
