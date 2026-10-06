@@ -6,10 +6,10 @@
 Dois bancos, cada um com seu papel:
 
 - **PostgreSQL 18 + TimescaleDB 2.29**: tudo o que o Zabbix sempre guardou (configuração, eventos, histórico e trends) e o resultado dos itens *Telemetry query*.
-- **ClickHouse**: só os dados brutos de APM (traces OpenTelemetry).
+- **ClickHouse**: só os dados brutos de APM (traces, logs e métricas OpenTelemetry).
 
 ```
-aplicação --OTLP 4317--> proxy com APM --> ClickHouse (otel_traces)
+aplicação --OTLP 4317--> proxy com APM --> ClickHouse (otel_*)
                                               ^
 frontend (APM > Traces) e server (Telemetry query) leem daqui
 ```
@@ -21,7 +21,7 @@ frontend (APM > Traces) e server (Telemetry query) leem daqui
 ```
 docker-compose.yml        server, web, agent, PostgreSQL + TimescaleDB e ClickHouse
 .env                      versões e senhas
-clickhouse-init/          cria a tabela otel_traces na primeira subida
+clickhouse-init/          cria as tabelas otel_traces, otel_logs e otel_metrics_* na primeira subida
 proxy/                    proxy compilado com APM (Dockerfile, conf, compose)
 lab-app/                  app de exemplo que envia traces, logs e métricas
 ```
@@ -51,7 +51,7 @@ docker compose exec postgres psql -U zabbix -d zabbix -c "SELECT extname, extver
 docker compose exec clickhouse clickhouse-client --user zabbix --password "$CLICKHOUSE_PASSWORD" -q "SHOW TABLES FROM zabbix"
 ```
 
-Esperado: `timescaledb 2.29.x` e a tabela `otel_traces`.
+Esperado: `timescaledb 2.29.x` e 7 tabelas: `otel_traces`, `otel_logs` e `otel_metrics_*` (gauge, sum, histogram, exponential_histogram, summary).
 
 **5. Configure o frontend** em `http://IP_DO_HOST:8080` (`Admin` / `zabbix`):
 
@@ -94,7 +94,7 @@ cd lab-app
 docker compose up -d --build
 ```
 
-4. Em 2 a 3 minutos, veja os valores em *Monitoring → Latest data*. Eles ficam no PostgreSQL:
+4. Em 2 a 3 minutos, veja os valores (traces, logs e métricas) em *Monitoring → Latest data*. Eles ficam no PostgreSQL:
 
 ```bash
 cd ..
@@ -103,10 +103,14 @@ docker compose exec postgres psql -U zabbix -d zabbix -c "SELECT i.key_, h.value
 
 ## Observações
 
-- **Só há a tabela `otel_traces`.** Os itens de logs e métricas do template (`Get logs`, `Logs:*`, `Metrics:*`, `System: Uptime`) ficam *não suportados*, pois não existem tabelas `otel_logs` e `otel_metrics_*`. O `lab-app` envia logs e métricas, mas eles não são armazenados.
+- **Tabelas:** o proxy insere por posição de coluna e envia timestamps como decimal (`1759700000.123456789`), que o ClickHouse não converte em `DateTime64`. Por isso os SQLs usam uma coluna `...Raw Decimal(19,9)` e a coluna `DateTime64` real como `MATERIALIZED`. Não altere a ordem das colunas.
 - **Proxy:** as imagens oficiais não têm o coletor OTLP, por isso o proxy é compilado com `--with-apm` (`proxy/Dockerfile`). Ele grava no ClickHouse com `ZBX_TELEMETRYPROVIDER_0` em JSON (usuário e senha em variáveis separadas).
 - **Server:** a imagem não aplica o `ZBX_TELEMETRYPROVIDER_0`, e o APM funciona sem ele, com o ClickHouse configurado em *Data sources → APM*.
-- **Tabela `otel_traces`:** é criada só quando o volume do ClickHouse é novo. Em volume existente, aplique uma vez: `docker compose exec -T clickhouse clickhouse-client --user zabbix --password "$CLICKHOUSE_PASSWORD" --multiquery < clickhouse-init/01-otel_traces.sql`.
+- **Tabelas do ClickHouse:** são criadas só quando o volume é novo. Em volume existente, aplique uma vez (`source .env` antes):
+
+  ```bash
+  for f in clickhouse-init/*.sql; do docker compose exec -T clickhouse clickhouse-client --user zabbix --password "$CLICKHOUSE_PASSWORD" --multiquery < $f; done
+  ```
 - **Depois de um `docker compose down -v` na raiz:** cadastre o proxy de novo e recrie o container dele (`cd proxy && docker compose down && docker compose up -d`).
 - **Imagens:** o Docker Hub não tem tag 8.0. O laboratório usa `alpine-trunk` (desenvolvimento do 8.0) e a imagem `timescale/timescaledb:2.29.2-pg18`.
 - **Retenção:** o housekeeper não limpa o ClickHouse. Quem remove dados antigos é o TTL da tabela (31 dias).
