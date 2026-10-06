@@ -28,8 +28,8 @@ lab-app/                  app de exemplo que envia traces, logs e métricas
 **1. Baixe o repositório** (precisa de Docker com Compose e `git`):
 
 ```bash
-git clone https://github.com/lucasmokan/zabbix8-clickhouse-docker.git
-cd zabbix8-clickhouse-docker
+git clone https://github.com/lucasmokan/zabbix-8rc1-apm-docker.git
+cd zabbix-8rc1-apm-docker
 ```
 
 **2. Troque as senhas** em `.env` (`POSTGRES_PASSWORD` e `CLICKHOUSE_PASSWORD`) e em `proxy/.env` (`CLICKHOUSE_PASSWORD`, a mesma).
