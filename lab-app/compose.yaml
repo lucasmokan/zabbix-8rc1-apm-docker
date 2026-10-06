@@ -1,0 +1,14 @@
+services:
+  lab-app:
+    build: .
+    restart: unless-stopped
+    environment:
+      OTLP_ENDPOINT: zabbix-proxy:4317
+      SERVICE_NAME: lab-app
+      REQUEST_INTERVAL: "0.5"
+    networks: [zbx]
+
+networks:
+  zbx:
+    external: true
+    name: zabbix8_zbx
