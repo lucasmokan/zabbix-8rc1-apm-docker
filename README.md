@@ -101,6 +101,7 @@ cd ..
 docker compose exec postgres psql -U zabbix -d zabbix -c "SELECT i.key_, h.value, to_timestamp(h.clock) FROM history_uint h JOIN items i USING(itemid) WHERE i.key_ LIKE 'otlp.span%' ORDER BY h.clock DESC LIMIT 5"
 ```
 
+**IMPORTANTE**
 5. O `lab-app` envia dados sem parar e enche o ClickHouse. Quando terminar o teste, pare:
 
 ```bash
