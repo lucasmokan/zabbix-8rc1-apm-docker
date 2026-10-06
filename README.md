@@ -105,7 +105,7 @@ docker compose exec postgres psql -U zabbix -d zabbix -c "SELECT i.key_, h.value
 5. O `lab-app` envia dados sem parar e enche o ClickHouse. Quando terminar o teste, pare:
 
 ```bash
-docker compose -f lab-app/compose.yaml down
+docker compose -f compose.yaml down
 ```
 
 ## Observações
