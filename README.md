@@ -92,6 +92,7 @@ docker compose exec clickhouse clickhouse-client --user zabbix --password "$CLIC
 ```bash
 cd lab-app
 docker compose up -d --build
+docker compose logs -f
 ```
 
 4. Em 2 a 3 minutos, veja os valores (traces, logs e métricas) em *Monitoring → Latest data*. Eles ficam no PostgreSQL:
