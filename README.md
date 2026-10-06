@@ -1,4 +1,4 @@
-# Zabbix 8.0 em Docker: PostgreSQL 18 + TimescaleDB e ClickHouse para APM
+# Zabbix 8.0.0rc1 em Docker: ClickHouse + ZabbixProxy para APM
 
 Laboratório com dois bancos, cada um com seu papel:
 
